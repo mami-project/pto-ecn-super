@@ -1,0 +1,17 @@
+{
+  "input_formats": [],
+  "input_types": [
+    "ecn.connectivity.works",
+    "ecn.connectivity.broken",
+    "ecn.connectivity.transient",
+    "ecn.connectivity.offline"
+  ],
+  "output_types": [
+    "ecn.super.connectivity.works",
+    "ecn.super.connectivity.broken",
+    "ecn.super.connectivity.transient",
+    "ecn.super.connectivity.offline"
+  ],
+  "command_line": ["python3", "master.py"],
+  "direct": false
+}
