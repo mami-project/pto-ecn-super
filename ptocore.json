@@ -7,10 +7,11 @@
     "ecn.connectivity.offline"
   ],
   "output_types": [
-    "ecn.super.connectivity.works",
-    "ecn.super.connectivity.broken",
-    "ecn.super.connectivity.transient",
-    "ecn.super.connectivity.offline"
+    "ecn.connectivity.super.works",
+    "ecn.connectivity.super.broken",
+    "ecn.connectivity.super.transient",
+    "ecn.connectivity.super.offline",
+    "ecn.connectivity.super.weird"
   ],
   "command_line": ["python3", "master.py"],
   "direct": false

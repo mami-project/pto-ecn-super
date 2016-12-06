@@ -5,39 +5,73 @@ from ptocore.analyzercontext import AnalyzerContext
 from ptocore.sensitivity import margin
 from ptocore.collutils import grouper
 
-def calculate_super_condition(conditions):
-    
-    if 'ecn.connectivity.works' in conditions:
-        return ['ecn.super.connectivity.works']
-    
-    if len(conditions) == 0:
-        print('WHOAAA, this should not happen: len(conditions) == 0')
-        return []
-    
-    super_condition = conditions[0]
-    for condition in conditions:
-        if condition == super_condition:
-            pass
-        else:
-            super_condition = 'ecn.connectivity.transient'
-            break
-    
-    if super_condition == 'ecn.connectivity.works':
-        return ['ecn.super.connectivity.works']
-    elif super_condition == 'ecn.connectivity.broken':
-        return ['ecn.super.connectivity.broken']
-    elif super_condition == 'ecn.connectivity.transient':
-        return ['ecn.super.connectivity.transient']
-    elif super_condition == 'ecn.connectivity.offline':
-        return ['ecn.super.connectivity.offline']
+def verify_all_elements_equal(array_to_check, element_value = None):
 
-    print('WHOAAA, this should not happen: supercondition of unkown type')
-    return []
-    
+    # There is nothing in the array, that's not right
+    if len(array_to_check) == 0:
+        return False
+
+    # if no value is specified, just check that all values in the array are
+    # equal to the first one.
+    if element_value == None:
+        element_value = array_to_check[0]
+
+    for element in array_to_check:
+        if element != element_value:
+            return False
+
+    return True
+
+def calculate_super_condition(conditions):
+
+    ecn_seen_working = False
+    no_ecn_seen_working = False
+
+    ## FIRST, find out what we have seen working
+    for condition in conditions:
+        if condition == 'ecn.connectivity.works':
+            ecn_seen_working = True
+            no_ecn_seen_working = True
+
+        elif condition == 'ecn.connectivity.broken':
+            no_ecn_seen_working = True
+
+        elif condition == 'ecn.connectivity.transient':
+            ecn_seen_working = True
+
+        elif condition == 'ecn.connectivity.offline':
+            pass
+
+    ## SECOND, determine on the actual super condition.
+    # Everything is working, Yay!
+    if ecn_seen_working and no_ecn_seen_working:
+        super_condition = 'ecn.connectivity.super.works'
+
+    # Nothing is working, host must me offline!
+    if not ecn_seen_working and not no_ecn_seen_working:
+        super_condition = 'ecn.connectivity.super.offline'
+
+    # This hints at ECN broken. Let's verify that all observations agree:
+    elif not ecn_seen_working and no_ecn_seen_working:
+        if verify_all_elements_equal(conditions, 'ecn.connectivity.broken'):
+            super_condition = 'ecn.connectivity.super.broken'
+        else:
+            super_condition = 'ecn.connectivity.super.weird'
+
+    # This hints at ECN transient. Let's verify that all observations agree:
+    elif ecn_seen_working and not no_ecn_seen_working:
+        if verify_all_elements_equal(conditions, 'ecn.connectivity.transient'):
+            super_condition = 'ecn.connectivity.super.transient'
+        else:
+            super_condition = 'ecn.connectivity.super.weird'
+
+    return super_condition
+
+
 def create_super_observation(db_entry):
-    
+
     conditions = calculate_super_condition(db_entry['conditions'])
-    
+
     dip = db_entry['_id']['dip']
     path = ['*', dip]
 
@@ -47,17 +81,17 @@ def create_super_observation(db_entry):
     timedict = dict()
     timedict['from'] = db_entry['time_from']
     timedict['to'] = db_entry['time_to']
-    
+
     sources = dict()
     sources['obs'] = db_entry['obs']
-    
+
     observation = dict()
     observation['time'] = timedict
     observation['path'] = path
     observation['conditions'] = conditions
     observation['sources'] = sources
     observation['value'] = value
-    
+
     return observation
 
 
@@ -71,6 +105,8 @@ max_action_id, timespans = margin(OFFSET, ac.action_set)
 time_from, time_to = timespans[0]
 ac.set_result_info(max_action_id, [(time_from, time_to)])
 
+print("I received {} timespans, but I am only processing one.".format(
+    len(timespans)))
 print("--> running with max action id: {}".format(max_action_id))
 print("--> running with time from: {}".format(time_from))
 print("--> running with time to: {}".format(time_to))
