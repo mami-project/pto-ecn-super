@@ -105,7 +105,7 @@ max_action_id, timespans = margin(OFFSET, ac.action_set)
 time_from, time_to = timespans[0]
 ac.set_result_info(max_action_id, [(time_from, time_to)])
 
-print("I received {} timespans, but I am only processing one.".format(
+print("--> I received {} timespans, but I am only processing one.".format(
     len(timespans)))
 print("--> running with max action id: {}".format(max_action_id))
 print("--> running with time from: {}".format(time_from))
