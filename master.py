@@ -91,8 +91,7 @@ def calculate_super_condition(conditions):
         else:
             super_condition = 'ecn.connectivity.super.weird'
 
-    return super_condition
-
+    return [super_condition]
 
 def create_super_observation(db_entry):
     """
