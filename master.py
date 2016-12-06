@@ -6,6 +6,17 @@ from ptocore.sensitivity import margin
 from ptocore.collutils import grouper
 
 def verify_all_elements_equal(array_to_check, element_value = None):
+    """
+    Verifies that all elements in an array are equal to a certain value.
+
+    If no value is passed, the first element of the array is used.
+
+    :param list array_to_check: the array to check the elements from
+    :param element_value: the value the elements should be equal to.
+        defaults to the first element of the array.
+    :returns: True if all elements are equal, False otherwise
+    :rtype: bool
+    """
 
     # There is nothing in the array, that's not right
     if len(array_to_check) == 0:
@@ -23,6 +34,21 @@ def verify_all_elements_equal(array_to_check, element_value = None):
     return True
 
 def calculate_super_condition(conditions):
+    """
+    Combines multiple conditions in to a super condition.
+
+    First looks if connections with or without ECN have ever been seen working.
+    Then uses this information to derive an obserservation about the host.
+    See source for exact logic.
+
+    :param list conditions: A list of conditions that should be merged.
+        Each element should be in the input conditions of this analyzer
+    :returns: the supercondition derived from the inputconditions.
+        Will always be in the output conditions of this analyzer
+    :rtype: list
+
+    """
+
 
     ecn_seen_working = False
     no_ecn_seen_working = False
@@ -69,6 +95,13 @@ def calculate_super_condition(conditions):
 
 
 def create_super_observation(db_entry):
+    """
+    Creates an output observation record for the db_entry
+
+    :param dict db_entry: entry as provided by the output of the DB aggregation
+    :returns: an observation formated for the databse
+    :trype: dict
+    """
 
     conditions = calculate_super_condition(db_entry['conditions'])
 
