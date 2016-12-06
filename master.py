@@ -40,7 +40,10 @@ def create_super_observation(db_entry):
     
     dip = db_entry['_id']['dip']
     path = ['*', dip]
-    
+
+    value = dict()
+    value['location'] = db_entry['_id']['location']
+
     timedict = dict()
     timedict['from'] = db_entry['time_from']
     timedict['to'] = db_entry['time_to']
@@ -53,7 +56,7 @@ def create_super_observation(db_entry):
     observation['path'] = path
     observation['conditions'] = conditions
     observation['sources'] = sources
-    observation['value'] = dict()
+    observation['value'] = value
     
     return observation
 
