@@ -134,7 +134,7 @@ def create_super_observation(db_entry):
 print("--> Good morning! My name is pto-ecn-super")
 
 ac = AnalyzerContext()
-OFFSET = datetime.timedelta(hours = 2)
+OFFSET = datetime.timedelta(hours = TIMESPAN_HOURS)
 max_action_id, timespans = margin(OFFSET, ac.action_set)
 
 # only analyze one timespan per time
