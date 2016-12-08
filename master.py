@@ -5,6 +5,9 @@ from ptocore.analyzercontext import AnalyzerContext
 from ptocore.sensitivity import margin
 from ptocore.collutils import grouper
 
+TIMESPAN_HOURS = 2
+CAMPAIGN = 'modern-times'
+
 def verify_all_elements_equal(array_to_check, element_value = None):
     """
     Verifies that all elements in an array are equal to a certain value.
@@ -109,6 +112,7 @@ def create_super_observation(db_entry):
 
     value = dict()
     value['location'] = db_entry['_id']['location']
+    value['campaign'] = CAMPAIGN
 
     timedict = dict()
     timedict['from'] = db_entry['time_from']
@@ -163,7 +167,9 @@ stages = [
             'time.from': {'$gte': time_from},
             'time.to': {'$lte': time_to},
             # We are only interested in observations that have a location set.
-            'value.location': {'$ne': None}
+            'value.location': {'$ne': None},
+            # And that are from the campaign
+            'value.campaign': CAMPAIGN
         }
     },
     # Create a record for every individual observation
