@@ -210,7 +210,9 @@ print("--> starting aggregation")
 cursor = ac.observations_coll.aggregate(stages, allowDiskUse=True)
 print("--> starting insertion in to DB")
 for observations in grouper(cursor, 1000):
+    new_observations = []
     for observation in observations:
-        ac.temporary_coll.insert_one(create_super_observation(observation))
+        new_observations.append(create_super_observation(observation))
+    ac.temporary_coll.insert_many(new_observations)
 
 print("--> Goodnight!")
