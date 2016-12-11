@@ -6,7 +6,7 @@ from ptocore.sensitivity import margin
 from ptocore.collutils import grouper
 
 TIMESPAN_HOURS = 2
-CAMPAIGN = 'modern-times'
+EXCLUDED_CAMPAIGNS = ['testing', 'testing-import', 'testing-fi']
 
 def verify_all_elements_equal(array_to_check, element_value = None):
     """
@@ -112,7 +112,6 @@ def create_super_observation(db_entry):
 
     value = dict()
     value['location'] = db_entry['_id']['location']
-    value['campaign'] = CAMPAIGN
 
     timedict = dict()
     timedict['from'] = db_entry['time_from']
@@ -169,7 +168,7 @@ stages = [
             # We are only interested in observations that have a location set.
             'value.location': {'$ne': None},
             # And that are from the campaign
-            'value.campaign': CAMPAIGN
+            'value.campaign': {'$nin': EXCLUDED_CAMPAIGNS }
         }
     },
     # Create a record for every individual observation
