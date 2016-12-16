@@ -52,7 +52,6 @@ def calculate_super_condition(conditions):
 
     """
 
-
     ecn_seen_working = False
     no_ecn_seen_working = False
 
